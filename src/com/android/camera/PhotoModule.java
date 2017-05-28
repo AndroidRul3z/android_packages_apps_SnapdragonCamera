@@ -296,6 +296,7 @@ public class PhotoModule
     private boolean mMirror;
     private boolean mFirstTimeInitialized;
     private boolean mIsImageCaptureIntent;
+    private int mOrientationOffset;
 
     private int mCameraState = INIT;
     private boolean mSnapshotOnIdle = false;
@@ -501,6 +502,7 @@ public class PhotoModule
         mActivity = activity;
         mRootView = parent;
         mPreferences = new ComboPreferences(mActivity);
+        mOrientationOffset = CameraUtil.isDefaultToPortrait(mActivity) ? 0 : 90;
         CameraSettings.upgradeGlobalPreferences(mPreferences.getGlobal(), activity);
         mCameraId = getPreferredCameraId(mPreferences);
 
@@ -1596,7 +1598,7 @@ public class PhotoModule
         }
 
         // Set rotation and gps data.
-        int orientation = mOrientation;
+        int orientation = (mOrientation + mOrientationOffset) % 360;
         mJpegRotation = CameraUtil.getJpegRotation(mCameraId, orientation);
         String pictureFormat = mParameters.get(KEY_PICTURE_FORMAT);
         Location loc = getLocationAccordPictureFormat(pictureFormat);
@@ -1974,6 +1976,7 @@ public class PhotoModule
         // the camera then point the camera to floor or sky, we still have
         // the correct orientation.
         if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) return;
+        orientation = (orientation - mOrientationOffset + 360) % 360;
         int oldOrientation = mOrientation;
         mOrientation = CameraUtil.roundOrientation(orientation, mOrientation);
         if (oldOrientation != mOrientation) {

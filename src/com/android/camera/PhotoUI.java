@@ -341,6 +341,9 @@ public class PhotoUI implements PieListener,
         FrameLayout.LayoutParams lp;
         float scaledTextureWidth, scaledTextureHeight;
         int rotation = CameraUtil.getDisplayRotation(mActivity);
+        if(!CameraUtil.isDefaultToPortrait(mActivity)) {
+        rotation = (rotation - 90) % 360;
+        }
         if (mScreenRatio == CameraUtil.RATIO_16_9
                 && CameraUtil.determinCloseRatio(ratio) == CameraUtil.RATIO_4_3) {
             int l = (mTopMargin + mBottomMargin) * 4;
@@ -1293,3 +1296,4 @@ public class PhotoUI implements PieListener,
         setOrientation(mOrientation, true);
     }
 }
+
